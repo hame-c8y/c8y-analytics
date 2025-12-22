@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/reubenmiller/go-c8y-cli/v2/tools/schema/extensionCommands.json
+---
+group:
+  name: epl
+  description: EPL Apps
+
+commands:
+  - name : list
+    description: Get collection of EPL Apps
+    exampleList:
+      - command: c8y epl list
+        description: List EPL Apps
+    path: /inventory/managedObjects?type=apama_eplfile
+    method: GET
+  - name : get
+    description: Get EPL App by ID
+    exampleList:
+      - command: c8y epl get --id 12345
+        description: Get EPL App by ID
+    path: /service/cep/eplfiles/{id}
+    method: GET
+    pathParameters:
+      - name: id
+        type: string
+        required: true
+        description: The ID of the EPL App
+  - name: create
+    description: Create a new EPL App
+    exampleList:
+      - command: c8y epl create --data '{"name":"My EPL App","description":"Description of my EPL App"}'
+        description: Create a new EPL App
+    path: /service/cep/eplfiles
+    method: POST
+    body:
+      - name: name
+        type: string
+        description: The name of the EPL App
+        required: false
+        pipeline: true
+      - name: description
+        type: string
+        description: The description of the EPL App
+        required: false
+      - name: state
+        type: string
+        description: The state of the EPL App
+        required: false
+        validationSet:
+          - active
+          - inactive
+    bodyTemplates:
+      - type: jsonnet
+        template: |
+          {
+          "description": "",
+          "state": "inactive",
+          "contents": "/** Basic event definitions */\nusing com.apama.cumulocity.ManagedObject;\nusing com.apama.cumulocity.FindManagedObject;\nusing com.apama.cumulocity.FindManagedObjectResponse;\nusing com.apama.cumulocity.FindManagedObjectResponseAck;\n\nusing com.apama.cumulocity.Measurement;\nusing com.apama.cumulocity.MeasurementValue;\nusing com.apama.cumulocity.MeasurementFragment;\nusing com.apama.cumulocity.FindMeasurement;\nusing com.apama.cumulocity.FindMeasurementResponse;\nusing com.apama.cumulocity.FindMeasurementResponseAck;\n\nusing com.apama.cumulocity.Alarm;\nusing com.apama.cumulocity.FindAlarm;\nusing com.apama.cumulocity.FindAlarmResponse;\nusing com.apama.cumulocity.FindAlarmResponseAck;\n\nusing com.apama.cumulocity.Event;\nusing com.apama.cumulocity.FindEvent;\nusing com.apama.cumulocity.FindEventResponse;\nusing com.apama.cumulocity.FindEventResponseAck;\n\nusing com.apama.cumulocity.Operation;\nusing com.apama.cumulocity.FindOperation;\nusing com.apama.cumulocity.FindOperationResponse;\nusing com.apama.cumulocity.FindOperationResponseAck;\n\nusing com.apama.cumulocity.ObjectCommitted;\nusing com.apama.cumulocity.ObjectCommitFailed;\n\n/** Miscellaneous utilities */\nusing com.apama.cumulocity.Util;\nusing com.apama.util.AnyExtractor;\n\nmonitor MySampleMonitor {\n\t/** Initialize the application */\n\taction onload() {\n\t\t// Application starts here\n\t}\n}"
+          }
+  - name : delete
+    description: Delete EPL App by ID
+    exampleList:
+      - command: c8y epl delete --id 12345
+        description: Delete EPL App by ID
+    path: /service/cep/eplfiles/{id}
+    method: DELETE
+    pathParameters:
+      - name: id
+        type: string
+        required: true
+        description: The ID of the EPL App
+  - name: update
+    description: Update an existing EPL App
+    exampleList:
+      - command: c8y epl update --data '{"name":"My EPL App","description":"Description of my EPL App"}'
+        description: Update an existing EPL App
+    path: /service/cep/eplfiles/{id}
+    method: PUT
+    pathParameters:
+      - name: id
+        type: string
+        required: true
+        description: The ID of the EPL App
+    body:
+      - name: name
+        type: string
+        description: The name of the EPL App
+        required: false
+        pipeline: true
+      - name: description
+        type: string
+        description: The description of the EPL App
+        required: false
+      - name: state
+        type: string
+        description: The state of the EPL App
+        required: false
+        validationSet:
+          - active
+          - inactive     

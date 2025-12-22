@@ -1,0 +1,29 @@
+{
+    "version": "1",
+    "definitions": [
+        {
+            "name": "eplapps",
+            "priority": 400,
+            "type": "apama_eplfile",
+            "fragments": ["apama_eplfile"],
+            "columns": [
+                "id",
+                "name",
+                "state:apama_eplfile.state",
+                "description:apama_eplfile.description"
+            ]
+        },
+        {
+            "name": "eplapps2",
+            "priority": 400,
+            "requestPath": "/service/cep/eplfiles/*",
+            "columns": [
+                "id",
+                "name",
+                "state",
+                "description"
+            ]
+        }
+
+    ]
+}
