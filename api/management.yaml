@@ -26,6 +26,7 @@ commands:
         description: Get the health of the Apama microservice
     path: /service/cep/health
     method: GET
+    collectionProperty: '-'
   - name : diagnosticsOverview
     description: Get diagnostics overview of the Apama microservice
     exampleList:

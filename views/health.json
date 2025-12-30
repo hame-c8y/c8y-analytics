@@ -7,9 +7,8 @@
             "requestPath": "/service/cep/health",
             "columns": [
                 "status",
-                "components.apamaHealth.details.instance",
-                "components.livenessStatus",
-                "components.readinessStatus"
+                "liveness state:components.livenessState",
+                "readiness state:components.readinessState"
             ]
         }
     ]
