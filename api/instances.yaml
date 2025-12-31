@@ -8,7 +8,7 @@ commands:
   - name : list
     description: Get all instances of a specific Analytics Builder Template model
     exampleList:
-      - command: c8y analytics instances list
+      - command: c8y analytics instances list --id 12345 
         description: Get all instances of a specific Analytics Builder Template model
     path: /service/cep/analyticsbuilder/{id}/instances
     method: GET

@@ -83,7 +83,7 @@ Template models are a way to parameterize models and then create multiple instan
 
 List all instances of a template model:
 ```
-c8y analytics instances list
+c8y analytics instances list --id 2579780855
 ```
 
 Update an instance of a template model:
