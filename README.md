@@ -78,6 +78,25 @@ c8y analytics epl list --includeAll
 
 **Note:** The list of Analytics Builder models always includes all models, whereas the list EPL Apps uses pagination.
 
+### Analytics Builder Template Models
+Template models are a way to parameterize models and then create multiple instances with different values for these parameters.
+
+List all instances of a template model:
+```
+c8y analytics instances list
+```
+
+Update an instance of a template model:
+```
+c8y analytics instances update --id 2579780855 --instanceId 9579789317 --mode PRODUCTION
+```
+**Note:** This command is mostly useful to apply state and mode changes. While changes to parameter values are possible it requires to provide all parameters via the --data flag.
+
+Delete an instance of a template model:
+```
+c8y analytics instances delete --id 2579780855 --instanceId 9579789317
+```
+
 ### Management
 These commands provide control over the Apama microservice that provides the Streaming Analytics capabilities of Cumulocity.
 
