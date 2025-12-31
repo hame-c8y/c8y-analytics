@@ -24,6 +24,18 @@ commands:
         type: string
         required: true
         description: The ID of the extension
+  - name : download
+    description: Download an extension by ID
+    exampleList:
+      - command: c8y analytics extensions download --id "{id}" --outputFileRaw "./my-extension.zip"  > /dev/null
+        description: Download an extension by ID
+    path: /inventory/binaries/{id}
+    method: GET
+    pathParameters:
+      - name: id
+        type: string
+        required: true
+        description: The ID of the extension
   - name : upload
     description: Upload a new extension
     exampleList:

@@ -42,7 +42,7 @@ commands:
     path: /service/cep/diagnostics/enhanced
     method: GET
   - name : numClients
-    description: Configure the number of used by the Apama microservice
+    description: Configure the number clients of used by the Apama microservice
     exampleList:
       - command: c8y analytics management numClients --count 5
         description: Use 5 clients concurrently.

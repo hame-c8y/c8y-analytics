@@ -3,10 +3,32 @@ go-c8y-cli extension for Streaming Analytics.
 
 The extension currently supports
 
-* Fetching all Analytics Builder models and EPL Apps on a tenant
-* Getting / Updating / Deleting individual Analytics Builder models and EPL Apps
-* Changing the state of an Analytics Builder model and EPL App (active, inactive)
-* Changing the mode of an Analytics Builder model and EPL App (DRAFT, TEST, SIMULATION, PRODUCTION)
+**Analytics Builder Models**
+
+* List all Analytics Builder models on a tenant
+* Getting / Updating / Deleting individual Analytics Builder models
+* Changing the state of an Analytics Builder model (active, inactive)
+* Changing the mode of an Analytics Builder model (DRAFT, TEST, SIMULATION, PRODUCTION)
+
+**EPL Apps**
+
+* List all EPL Apps on a tenant
+* Getting / Updating / Deleting individual EPL Apps
+* Changing the state of an EPL App (active, inactive)
+
+**Streaming Analytics Management**
+
+* Restart Apama microservice
+* Get health and versioning information of the Apama microservice
+* Retrieve diagnostics overview and full view
+* Configure the Apama microservice via tenant options
+
+**Extension Management**
+
+* List all installed Analytics extensions
+* Get details on an individual Analytics extension
+* Delete Analytics extensions
+* Download & upload Analytics extensions
 
 ## Installation
 
@@ -17,7 +39,97 @@ c8y extension install hame-c8y/c8y-analytics
 ``` 
 
 ## Usage examples
-tbd
+
+### Analytics Builder Models
+
+List all Analytics Builder models:
+```
+c8y analytics ab list
+```
+
+Download a specific Analytics Builder model:
+```
+c8y analytics ab get --id 5379731810 --outputFileRaw iir.json
+```
+
+Upload a new Analytics Builder model:
+```
+c8y analytics ab create --name iir2 --template iir.json
+```
+
+Update the state of an Analytics Builder model:
+```
+c8y analytics ab update --id 1579830237 --state ACTIVE
+```
+
+Delete an Analytics Builder model:
+```
+c8y analytics ab delete --id 1579830237
+```
+
+### EPL Apps
+
+EPL Apps support the same commands, like Analytics Builder models. For example, to list all EPL Apps:
+
+List all EPL Apps:
+```
+c8y analytics epl list --includeAll
+```
+
+**Note:** The list of Analytics Builder models always includes all models, whereas the list EPL Apps uses pagination.
+
+### Management
+These commands provide control over the Apama microservice that provides the Streaming Analytics capabilities of Cumulocity.
+
+Restart the Apama microservice (e.g. after deploying custom blocks):
+```
+c8y analytics management restart
+```
+
+Get full diagnostics of the Apama microservice (the command uses the file name provided by the Apama microservice):
+```
+c8y analytics management diagnosticsEnhanced --outputFileRaw "{filename}" > /dev/null
+```
+
+Configure the delay used for reordering and ignoring data. For details refer to the documentation on [Input blocks and event timing](https://cumulocity.com/docs/streaming-analytics/analytics-builder/#input-blocks-and-event-timing).
+```
+c8y analytics management timedelay_secs --delay 10
+```
+
+In addition, commands exist to configure the number of client the Apama microservice uses to interact with Cumulocity and the number of worker threads Analytics Builder uses.
+
+### Analytics Extensions
+
+Analytics extensions are used to deploy custom blocks for Analytics Builder and other customizations into the Apama microservice. They can be built using the [Apama Analytics Builder Block SDK](https://github.com/Cumulocity-IoT/apama-analytics-builder-block-sdk).
+
+List all Analytics extensions:
+```
+c8y analytics extensions list --includeAll
+```
+
+Get the details of an individual Analytics extension by id:
+```
+c8y analytics extensions get --id 1779829394
+```
+
+Delete an Analytics extension:
+```
+c8y analytics extensions delete --id 1779829394
+```
+
+Download an Analytics extension:
+```
+c8y analytics extensions download --id 1179099345 --outputFileRaw MyBlocks.zip  > /dev/null
+```
+
+
+Upload an Analytics extension built with the Block SDK:
+```
+analytics extensions upload --file MyBlocks.zip --verbose --name MyBlocks --pas_extension MyBlocks
+```
+
+
+
 
 ## Licensing
 
