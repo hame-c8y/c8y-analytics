@@ -26,10 +26,14 @@ commands:
         pipeline: true
         description: The ID of the extension
   - name: download
-    description: Download an extension by ID
+    description: Download an extension
     exampleList:
-      - command: c8y analytics extensions download --id "{id}" --outputFileRaw "./my-extension.zip"  > /dev/null
+      - command: c8y analytics extensions download --id "{id}" --outputFileRaw "./my-extension.zip" > /dev/null
         description: Download an extension by ID
+
+      - command: c8y analytics extensions list | c8y analytics extensions download --outputFileRaw '{filename}.zip' > /dev/null
+        description: Download all extensions
+
     path: /inventory/binaries/{id}
     method: GET
     pathParameters:
