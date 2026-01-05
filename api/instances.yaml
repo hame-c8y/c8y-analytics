@@ -4,6 +4,34 @@ group:
   name: instances
   description: Analytics Builder Template instances
 
+x-type-epl: &x-type-epl
+  type: string
+  required: true
+  description: The ID of the Analytics Builder Template 
+  completion:
+    type: external
+    command:
+      - c8y
+      - analytics
+      - ab
+      - list
+      - --filter
+      - name like %s*
+      - --select=name,id
+      - --output=tsv
+  lookup:
+    type: external
+    options:
+      idPattern: '^[0-9]+$'
+    command:
+      - c8y
+      - analytics
+      - ab
+      - list
+      - --filter
+      - name like %s*
+      - --select=id
+
 commands:
   - name: list
     description: Get all instances of a specific Analytics Builder Template model
@@ -14,10 +42,9 @@ commands:
     method: GET
     pathParameters:
       - name: id
-        type: string
-        required: true
         pipeline: true
-        description: The ID of the Analytics Builder Template 
+        <<: *x-type-epl
+
   - name: update
     description: Update an existing Analytics Builder Template instance
     exampleList:
@@ -27,9 +54,7 @@ commands:
     method: PUT
     pathParameters:
       - name: id
-        type: string
-        required: true
-        description: The ID of the Analytics Builder Template model
+        <<: *x-type-epl
       - name: instanceId
         type: string
         required: true
@@ -69,9 +94,7 @@ commands:
     method: DELETE
     pathParameters:
       - name: id
-        type: string
-        required: true
-        description: The ID of the Analytics Builder Template model
+        <<: *x-type-epl
       - name: instanceId
         type: string
         required: true

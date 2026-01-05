@@ -4,14 +4,65 @@ group:
   name: epl
   description: EPL Apps
 
+x-type-epl: &x-type-epl
+  type: string
+  required: true
+  pipeline: true
+  description: The ID of the EPL App
+  completion:
+    type: external
+    command:
+      - c8y
+      - analytics
+      - epl
+      - list
+      - --name=%s*
+      - --select=name,id
+      - --output=tsv
+  lookup:
+    type: external
+    options:
+      idPattern: '^[0-9]+$'
+    command:
+      - c8y
+      - analytics
+      - epl
+      - list
+      - --name=%s
+      - --select=id
+
 commands:
   - name: list
     description: Get collection of EPL Apps
     exampleList:
       - command: c8y analytics epl list
         description: List EPL Apps
-    path: /inventory/managedObjects?type=apama_eplfile
+    path: /inventory/managedObjects
     method: GET
+    queryParameters:
+      - name: query
+        type: queryExpression
+        description: Filter
+        children:
+          - name: type
+            hidden: true
+            description: Only include types
+            type: stringStatic
+            value: type eq 'apama_eplfile'
+
+          - name: name
+            type: string
+            format: name eq '%s'
+            description: Filter by name
+
+          - name: state
+            type: string
+            format: apama_eplfile.state eq '%s'
+            description: Filter by state
+            validationSet:
+              - active
+              - inactive
+
   - name: get
     description: Get EPL App by ID
     exampleList:
@@ -21,10 +72,7 @@ commands:
     method: GET
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the EPL App
+        <<: *x-type-epl
   - name: create
     description: Create a new EPL App
     exampleList:
@@ -65,10 +113,7 @@ commands:
     method: DELETE
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the EPL App
+        <<: *x-type-epl
   - name: update
     description: Update an existing EPL App
     exampleList:
@@ -78,10 +123,7 @@ commands:
     method: PUT
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the EPL App
+        <<: *x-type-epl
     body:
       - name: name
         type: string

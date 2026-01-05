@@ -4,31 +4,71 @@ group:
   name: extensions
   description: extensions
 
+x-type-extension: &x-type-extension
+  type: string
+  required: true
+  pipeline: true
+  description: Extension id or name
+  completion:
+    type: external
+    command:
+      - c8y
+      - analytics
+      - extensions
+      - list
+      - --name=%s*
+      - --select=name,id
+      - --output=tsv
+  lookup:
+    type: external
+    options:
+      idPattern: '^[0-9]+$'
+    command:
+      - c8y
+      - analytics
+      - extensions
+      - list
+      - --name=%s
+      - --select=id
+
 commands:
   - name: list
     description: Get the list of extensions
     exampleList:
       - command: c8y analytics extensions list
         description: Get the list of extensions
-    path: /inventory/managedObjects?fragmentType=pas_extension
+    path: /inventory/managedObjects
     method: GET
+    queryParameters:
+      - name: query
+        type: queryExpression
+        description: Filter
+        children:
+          - name: type
+            hidden: true
+            description: Only include types
+            type: stringStatic
+            value: has(pas_extension)
+
+          - name: name
+            type: string
+            format: name eq '%s'
+            description: Filter by name
+
   - name: get 
     description: Get an extension by ID
     exampleList:
-      - command: c8y analytics extensions get --id "{id}"
+      - command: c8y analytics extensions get --id "12345"
         description: Get an extension by ID
     path: /inventory/managedObjects/{id}
     method: GET    
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the extension
+        <<: *x-type-extension
   - name: download
     description: Download an extension
     exampleList:
-      - command: c8y analytics extensions download --id "{id}" --outputFileRaw "./my-extension.zip" > /dev/null
+      - command: c8y analytics extensions download --id "12345" --outputFileRaw "./my-extension.zip" > /dev/null
         description: Download an extension by ID
 
       - command: c8y analytics extensions list | c8y analytics extensions download --outputFileRaw '{filename}.zip' > /dev/null
@@ -38,10 +78,7 @@ commands:
     method: GET
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the extension
+        <<: *x-type-extension
   - name: upload
     description: Upload a new extension
     exampleList:
@@ -58,18 +95,15 @@ commands:
         description: Set the name of the binary file. This will be the name of the file when it is downloaded in the UI
         required: true
       - name: pas_extension
-        type: string
+        type: file
         required: true
   - name: delete
     description: Delete an extension by ID
     exampleList:
-      - command: c8y analytics extensions delete --id "{id}"
+      - command: c8y analytics extensions delete --id "12345"
         description: Delete an extension by ID
     path: /inventory/binaries/{id}
     method: DELETE
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the extension
+        <<: *x-type-extension

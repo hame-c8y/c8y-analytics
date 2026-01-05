@@ -4,6 +4,35 @@ group:
   name: ab
   description: Analytics Builder
 
+x-type-model: &x-type-model
+  type: string
+  required: true
+  pipeline: true
+  description: The ID of the Analytics Builder model
+  completion:
+    type: external
+    command:
+      - c8y
+      - analytics
+      - ab
+      - list
+      - --filter
+      - name like %s*
+      - --select=name,id
+      - --output=tsv
+  lookup:
+    type: external
+    options:
+      idPattern: '^[0-9]+$'
+    command:
+      - c8y
+      - analytics
+      - ab
+      - list
+      - --select=id
+      - --filter
+      - name like %s*
+
 commands:
   - name: list
     description: Get collection of Analytics Builder models
@@ -21,10 +50,7 @@ commands:
     method: GET
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the Analytics Builder model
+        <<: *x-type-model
   - name: create
     description: Create a new Analytics Builder model
     exampleList:
@@ -82,10 +108,8 @@ commands:
     method: DELETE
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the Analytics Builder model
+        <<: *x-type-model
+
   - name: update
     description: Update an existing Analytics Builder model
     exampleList:
@@ -95,10 +119,7 @@ commands:
     method: PUT
     pathParameters:
       - name: id
-        type: string
-        required: true
-        pipeline: true
-        description: The ID of the Analytics Builder model
+        <<: *x-type-model
     body:
       - name: name
         type: string
