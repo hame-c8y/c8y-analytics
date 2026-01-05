@@ -45,7 +45,7 @@ commands:
   - name: upload
     description: Upload a new extension
     exampleList:
-      - command: c8y analytics extensions upload --file "./my-extension.zip" --name "My Extension" -template '{pas_extension:$.name}'
+      - command: c8y analytics extensions upload --file "./my-extension.zip" --name "My Extension" --template '{pas_extension:$.name}'
         description: Upload a new extension
     path: /inventory/binaries
     method: POST
