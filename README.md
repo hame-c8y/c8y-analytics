@@ -111,9 +111,11 @@ Get full diagnostics of the Apama microservice (the command uses the file name p
 c8y analytics management diagnosticsEnhanced --outputFileRaw "{filename}" > /dev/null
 ```
 
+### Configuration
+
 Configure the delay used for reordering and ignoring data. For details refer to the documentation on [Input blocks and event timing](https://cumulocity.com/docs/streaming-analytics/analytics-builder/#input-blocks-and-event-timing).
 ```
-c8y analytics management timedelay_secs --delay 10
+c8y analytics configuration update --key analytics.builder/timedelay_secs --value 180
 ```
 
 In addition, commands exist to configure the number of client the Apama microservice uses to interact with Cumulocity and the number of worker threads Analytics Builder uses.

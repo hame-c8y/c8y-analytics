@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/reubenmiller/go-c8y-cli/v2/tools/schema/extensionCommands.json
+---
+group:
+  name: configuration
+  description: configuration
+
+commands:
+  - name: get
+    description: Get a configuration of the Apama microservice
+    exampleList:
+      - command: c8y analytics configuration get --key streaminganalytics/client.numClients
+        description: Get the number of clients used by the Apama microservice
+      - command: c8y analytics configuration get --key analytics.builder/client.numWorkerThreads
+        description: Get the number of worker threads of Analytics Builder
+      - command: c8y analytics configuration get --key analytics.builder/timedelay_secs
+        description: Get the maximum delay in seconds before input blocks consider an event to be old. 
+    path: /tenant/options/{key}
+    method: GET
+    pathParameters:
+      - name: key
+        type: string
+        required: true
+        description: The configuration key
+        validationSet:
+          - streaminganalytics/client.numClients	Number of clients used to interact with the Cumulocit platform.
+          - analytics.builder/client.numWorkerThreads	The number of worker threads of Analytics Builder. The default value is 1. 
+          - analytics.builder/timedelay_secs	The maximum delay in seconds before input blocks consider an event to be old. The default value is 1 second.
+  - name: update
+    description: Update a configuration of the Apama microservice
+    exampleList:
+      - command: c8y analytics configuration update --key streaminganalytics/client.numClients --value 5
+        description: Update the number of clients used by the Apama microservice to 5.
+      - command: c8y analytics configuration update --key analytics.builder/client.numWorkerThreads --value 5
+        description: Update the number of worker threads of Analytics Builder to 5.
+      - command: c8y analytics configuration update --key analytics.builder/timedelay_secs --value 10
+        description: Update the maximum delay in seconds before input blocks consider an event to be old to 10 seconds.
+    path: /tenant/options
+    method: POST
+    body:
+      - name: value
+        type: integer
+        description: The configuration value
+        required: true    
+      - name: key
+        type: string
+        property: _key
+        # required: true
+        description: The configuration key (required)
+        validationSet:
+          - streaminganalytics/client.numClients	Number of clients used to interact with the Cumulocit platform.
+          - analytics.builder/client.numWorkerThreads	The number of worker threads of Analytics Builder. The default value is 1. 
+          - analytics.builder/timedelay_secs	The maximum delay in seconds before input blocks consider an event to be old. The default value is 1 second.
+    bodyTemplates:
+      - type: jsonnet
+        applyLast: true
+        template: |
+          {
+            local parts = std.split($._key,"/"),
+            category: if std.length(parts) > 0 then parts[0],
+            key::: if std.length(parts) > 1 then parts[1],
+            _key:: "",
+          }
+    bodyRequiredKeys:
+      - key
+      - value
