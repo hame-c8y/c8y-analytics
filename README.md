@@ -36,7 +36,7 @@ The extension currently supports
 The extension can be installed using the following command.
 
 ```sh
-c8y extension install hame-c8y/c8y-analytics
+c8y extension install Cumulocity-IoT/c8y-analytics
 ``` 
 
 ## Usage examples
