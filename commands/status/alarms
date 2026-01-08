@@ -3,17 +3,19 @@ set -e
 
 DOCOPT_DOC_CHECK=false
 
-DOC="Provide the events of the Apama Microservice
+DOC="Provide the alarms of the Apama Microservice
 
 Usage:
-  c8y analytics status events [--pageSize <size>] [--dateFrom <date>] [--dateTo <date>]
+  c8y analytics status alarms [--pageSize <size>] [--dateFrom <date>] [--dateTo <date>] [--status <status>] [--severity <severity>]
 
 Options:
-  --pageSize <size>  Number of events per page [default: 5]
+  --pageSize <size>  Number of alarms per page [default: 5]
   --dateFrom <date>  Start date [default: 1970-01-01]   
   --dateTo <date>    End date [default: 2100-01-01]   
+  --status <status>  Status of the alarms [default: ACTIVE]   
+  --severity <severity>  Severity of the alarms [default: CRITICAL,MAJOR,MINOR,WARNING]   
   "
-# docopt parser below, refresh this parser with `docopt.sh events`
+# docopt parser below, refresh this parser with `docopt.sh alarms`
 # shellcheck disable=2016,2086,2329,1075
 docopt() { parse() { if ${DOCOPT_DOC_CHECK:-true}; then local doc_hash;if \
 doc_hash=$(printf "%s" "$DOC" | (sha256sum 2>/dev/null || shasum -a 256)); then
@@ -64,26 +66,30 @@ $testdepth -gt 0 ]] && return 0;local value;value=$(printf -- "%q" \
 "var_$1=$value";fi;return 0;fi;done;return 1;};stdout() { printf -- "cat <<'EO'\
 'M'\n%s\nEOM\n" "$1";};stderr() { printf -- "cat <<'EOM' >&2\n%s\nEOM\n" "$1";}
 error() { [[ -n $1 ]] && stderr "$1";stderr "$usage";_return 1;};_return() {
-printf -- "exit %d\n" "$1";exit "$1";};set -e;trimmed_doc=${DOC:0:323}
-usage=${DOC:46:73};digest=b1122;options=(' --pageSize 1' ' --dateFrom 1' ' --d'\
-'ateTo 1');node_0(){ value __pageSize 0;};node_1(){ value __dateFrom 1;}
-node_2(){ value __dateTo 2;};node_3(){ optional 0;};node_4(){ optional 1;}
-node_5(){ optional 2;};node_6(){ sequence 3 4 5;};cat <<<' docopt_exit() { [[ \
--n $1 ]] && printf "%s\n" "$1" >&2;printf "%s\n" "${DOC:46:73}" >&2;exit 1;}'
-local varnames=(__pageSize __dateFrom __dateTo) varname;for varname in \
-"${varnames[@]}"; do unset "var_$varname";done;parse 6 "$@";local \
+printf -- "exit %d\n" "$1";exit "$1";};set -e;trimmed_doc=${DOC:0:521}
+usage=${DOC:46:117};digest=35d19;options=(' --pageSize 1' ' --dateFrom 1' ' --'\
+'dateTo 1' ' --status 1' ' --severity 1');node_0(){ value __pageSize 0;}
+node_1(){ value __dateFrom 1;};node_2(){ value __dateTo 2;};node_3(){ value \
+__status 3;};node_4(){ value __severity 4;};node_5(){ optional 0;};node_6(){
+optional 1;};node_7(){ optional 2;};node_8(){ optional 3;};node_9(){ optional 4
+};node_10(){ sequence 5 6 7 8 9;};cat <<<' docopt_exit() { [[ -n $1 ]] && \
+printf "%s\n" "$1" >&2;printf "%s\n" "${DOC:46:117}" >&2;exit 1;}';local \
+varnames=(__pageSize __dateFrom __dateTo __status __severity) varname;for \
+varname in "${varnames[@]}"; do unset "var_$varname";done;parse 10 "$@";local \
 p=${DOCOPT_PREFIX:-''};for varname in "${varnames[@]}"; do unset "$p$varname"
 done;eval $p'__pageSize=${var___pageSize:-5};'$p'__dateFrom=${var___dateFrom:-'\
-'1970-01-01};'$p'__dateTo=${var___dateTo:-2100-01-01};';local docopt_i=1;[[ \
-$BASH_VERSION =~ ^4.3 ]] && docopt_i=2;for ((;docopt_i>0;docopt_i--)); do for \
-varname in "${varnames[@]}"; do declare -p "$p$varname";done;done;}
-# docopt parser above, complete command for generating this parser is `docopt.sh events`
+'1970-01-01};'$p'__dateTo=${var___dateTo:-2100-01-01};'$p'__status=${var___sta'\
+'tus:-ACTIVE};'$p'__severity=${var___severity:-CRITICAL,MAJOR,MINOR,WARNING};'
+local docopt_i=1;[[ $BASH_VERSION =~ ^4.3 ]] && docopt_i=2;for \
+((;docopt_i>0;docopt_i--)); do for varname in "${varnames[@]}"; do declare -p \
+"$p$varname";done;done;}
+# docopt parser above, complete command for generating this parser is `docopt.sh alarms`
 
-events() {
+alarms() {
     eval "$(docopt "$@")"
     app_id="$(c8y applications list --includeAll --filter "contextPath eq cep" | jq -r .id)"
     mo_id=$(c8y inventory list --type c8y_Application_"$app_id" | jq -r '.id')
-    c8y events list --device "$mo_id" --dateFrom "$__dateFrom" --dateTo "$__dateTo" --pageSize "$__pageSize"
+    c8y alarms list --device "$mo_id" --dateFrom "$__dateFrom" --dateTo "$__dateTo" --pageSize "$__pageSize" --status "$__status" --severity "$__severity"
 }
 
-events "$@"
+alarms "$@"
