@@ -22,6 +22,7 @@ The extension currently supports
 * Restart Apama microservice
 * Get health and versioning information of the Apama microservice
 * Retrieve diagnostics overview and full view
+* Retrieve microservice logs / events / alarms
 * Configure the Apama microservice via tenant options
 
 **Extension Management**
@@ -109,6 +110,24 @@ c8y analytics management restart
 Get full diagnostics of the Apama microservice (the command uses the file name provided by the Apama microservice):
 ```
 c8y analytics management diagnosticsEnhanced --outputFileRaw "{filename}" > /dev/null
+```
+
+### Apama microservice status
+These commands give detailed status information on the Apama microservice.
+
+Retrieve the logs of the Apama microservice:
+```
+c8y analytics status logs
+```
+
+Retrieve the deployment and status change events of the Apama microservice:
+```
+c8y analytics status events
+```
+
+Retrieve all critical alarms related to the Apama microservice:
+```
+c8y analytics status alarms --severity CRITICA
 ```
 
 ### Configuration

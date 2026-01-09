@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+source "$(dirname "$0")/../../lib/helper"
+
+set -e
+
+DOCOPT_DOC_CHECK=false
+
+DOC="Provide the alarms of the Apama Microservice
+
+Usage:
+  c8y analytics status alarms [--pageSize <size>] [--dateFrom <date>] [--dateTo <date>] [--status <status>] [--severity <severity>]
+
+Options:
+  --pageSize <size>  Number of alarms per page [default: 5]
+  --dateFrom <date>  Start date [default: 1970-01-01]   
+  --dateTo <date>    End date [default: 2100-01-01]   
+  --status <status>  Status of the alarms [default: ACTIVE]   
+  --severity <severity>  Severity of the alarms [default: CRITICAL,MAJOR,MINOR,WARNING]   
+  "
+# docopt parser below, refresh this parser with `docopt.sh alarms`
+# shellcheck disable=2016,2086,2329,1075
+docopt() { parse() { if ${DOCOPT_DOC_CHECK:-true}; then local doc_hash;if \
+doc_hash=$(printf "%s" "$DOC" | (sha256sum 2>/dev/null || shasum -a 256)); then
+if [[ ${doc_hash:0:5} != "$digest" ]]; then stderr "The current usage doc \
+(${doc_hash:0:5}) does not match what the parser was generated with (${digest})
+Run \`docopt.sh\` to refresh the parser.";_return 70;fi;fi;fi;local root_idx=$1
+shift;params=();testdepth=0;local argv=("$@") arg i o;while [[ ${#argv[@]} -gt \
+0 ]]; do if [[ ${argv[0]} = "--" ]]; then for arg in "${argv[@]}"; do
+params+=("a:$arg");done;break;elif [[ ${argv[0]} = --* ]]; then local \
+long=${argv[0]%%=*};if ${DOCOPT_ADD_HELP:-true} && [[ $long = "--help" ]]; then
+stdout "$trimmed_doc";_return 0;elif [[ ${DOCOPT_PROGRAM_VERSION:-false} != 'f'\
+'alse' && $long = "--version" ]]; then stdout "$DOCOPT_PROGRAM_VERSION"
+_return 0;fi;local similar=() match=false;i=0;for o in "${options[@]}"; do if \
+[[ $o = *" $long "? ]]; then similar+=("$long");match=$i;break;fi;: $((i++))
+done;if [[ $match = false ]]; then i=0;for o in "${options[@]}"; do if [[ $o = \
+*" $long"*? ]]; then local long_match=${o#* };similar+=("${long_match% *}")
+match=$i;fi;: $((i++));done;fi;if [[ ${#similar[@]} -gt 1 ]]; then error \
+"${long} is not a unique prefix: ${similar[*]}?";elif [[ ${#similar[@]} -lt 1 \
+]]; then error;else if [[ ${options[$match]} = *0 ]]; then if [[ ${argv[0]} = \
+*=* ]]; then local long_match=${o#* };error "${long_match% *} must not have an \
+argument";else params+=("$match:true");argv=("${argv[@]:1}");fi;else if [[ \
+${argv[0]} = *=* ]]; then params+=("$match:${argv[0]#*=}");argv=("${argv[@]:1}")
+else if [[ ${#argv[@]} -le 1 || ${argv[1]} = '--' ]]; then error "${long} \
+requires argument";fi;params+=("$match:${argv[1]}");argv=("${argv[@]:2}");fi;fi
+fi;elif [[ ${argv[0]} = -* && ${argv[0]} != "-" ]]; then local \
+remaining=${argv[0]#-};while [[ -n $remaining ]]; do local \
+short="-${remaining:0:1}";if ${DOCOPT_ADD_HELP:-true} && [[ $short = "-h" ]]; \
+then stdout "$trimmed_doc";_return 0;fi;local matched=false
+remaining="${remaining:1}";i=0;for o in "${options[@]}"; do if [[ $o = "$short \
+"* ]]; then if [[ $o = *1 ]]; then if [[ $remaining = '' ]]; then if [[ \
+${#argv[@]} -le 1 || ${argv[1]} = '--' ]]; then error "${short} requires \
+argument";fi;params+=("$i:${argv[1]}");argv=("${argv[@]:1}");break 2;else
+params+=("$i:$remaining");break 2;fi;else params+=("$i:true");matched=true;break
+fi;fi;: $((i++));done;$matched || error;done;argv=("${argv[@]:1}");elif \
+${DOCOPT_OPTIONS_FIRST:-false}; then for arg in "${argv[@]}"; do
+params+=("a:$arg");done;break;else params+=("a:${argv[0]}")
+argv=("${argv[@]:1}");fi;done;if ! "node_$root_idx" || [ ${#params[@]} -gt 0 \
+]; then error;fi;return 0;};sequence() { local initial_params=("${params[@]}") \
+node_idx;: $((testdepth++));for node_idx in "$@"; do if ! "node_$node_idx"; then
+params=("${initial_params[@]}");: $((testdepth--));return 1;fi;done;if [[ \
+$((--testdepth)) -eq 0 ]]; then params=("${initial_params[@]}");for node_idx \
+in "$@"; do "node_$node_idx";done;fi;return 0;};optional() { local node_idx
+for node_idx in "$@"; do "node_$node_idx";done;return 0;};value() { local i \
+param;for i in "${!params[@]}"; do local param=${params[$i]};if [[ $param = \
+"$2":* ]]; then params=("${params[@]:0:$i}" "${params[@]:((i+1))}");[[ \
+$testdepth -gt 0 ]] && return 0;local value;value=$(printf -- "%q" \
+"${param#*:}");if [[ $3 = true ]]; then eval "var_$1+=($value)";else eval \
+"var_$1=$value";fi;return 0;fi;done;return 1;};stdout() { printf -- "cat <<'EO'\
+'M'\n%s\nEOM\n" "$1";};stderr() { printf -- "cat <<'EOM' >&2\n%s\nEOM\n" "$1";}
+error() { [[ -n $1 ]] && stderr "$1";stderr "$usage";_return 1;};_return() {
+printf -- "exit %d\n" "$1";exit "$1";};set -e;trimmed_doc=${DOC:0:521}
+usage=${DOC:46:117};digest=35d19;options=(' --pageSize 1' ' --dateFrom 1' ' --'\
+'dateTo 1' ' --status 1' ' --severity 1');node_0(){ value __pageSize 0;}
+node_1(){ value __dateFrom 1;};node_2(){ value __dateTo 2;};node_3(){ value \
+__status 3;};node_4(){ value __severity 4;};node_5(){ optional 0;};node_6(){
+optional 1;};node_7(){ optional 2;};node_8(){ optional 3;};node_9(){ optional 4
+};node_10(){ sequence 5 6 7 8 9;};cat <<<' docopt_exit() { [[ -n $1 ]] && \
+printf "%s\n" "$1" >&2;printf "%s\n" "${DOC:46:117}" >&2;exit 1;}';local \
+varnames=(__pageSize __dateFrom __dateTo __status __severity) varname;for \
+varname in "${varnames[@]}"; do unset "var_$varname";done;parse 10 "$@";local \
+p=${DOCOPT_PREFIX:-''};for varname in "${varnames[@]}"; do unset "$p$varname"
+done;eval $p'__pageSize=${var___pageSize:-5};'$p'__dateFrom=${var___dateFrom:-'\
+'1970-01-01};'$p'__dateTo=${var___dateTo:-2100-01-01};'$p'__status=${var___sta'\
+'tus:-ACTIVE};'$p'__severity=${var___severity:-CRITICAL,MAJOR,MINOR,WARNING};'
+local docopt_i=1;[[ $BASH_VERSION =~ ^4.3 ]] && docopt_i=2;for \
+((;docopt_i>0;docopt_i--)); do for varname in "${varnames[@]}"; do declare -p \
+"$p$varname";done;done;}
+# docopt parser above, complete command for generating this parser is `docopt.sh alarms`
+
+alarms() {
+    eval "$(docopt "$@")"
+    check_prerequisites
+    app_id="$(c8y applications list --includeAll --filter "contextPath eq cep" | jq -r .id)"
+    mo_id=$(c8y inventory list --type c8y_Application_"$app_id" | jq -r '.id')
+    c8y alarms list --device "$mo_id" --dateFrom "$__dateFrom" --dateTo "$__dateTo" --pageSize "$__pageSize" --status "$__status" --severity "$__severity"
+}
+
+alarms "$@"
