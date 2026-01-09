@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$(dirname "$0")/../../lib/helper"
+
 set -e
 
 DOCOPT_DOC_CHECK=false
@@ -87,6 +90,7 @@ local docopt_i=1;[[ $BASH_VERSION =~ ^4.3 ]] && docopt_i=2;for \
 
 alarms() {
     eval "$(docopt "$@")"
+    check_prerequisites
     app_id="$(c8y applications list --includeAll --filter "contextPath eq cep" | jq -r .id)"
     mo_id=$(c8y inventory list --type c8y_Application_"$app_id" | jq -r '.id')
     c8y alarms list --device "$mo_id" --dateFrom "$__dateFrom" --dateTo "$__dateTo" --pageSize "$__pageSize" --status "$__status" --severity "$__severity"

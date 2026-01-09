@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+source "$(dirname "$0")/../../lib/helper"
+
 set -e
 
 DOCOPT_DOC_CHECK=false
@@ -71,6 +74,7 @@ varname in "${varnames[@]}"; do declare -p "$p$varname";done;done;}
 
 log() {
     eval "$(docopt "$@")"
+    check_prerequisites
     app_id="$(c8y applications list --includeAll --filter "contextPath eq cep" | jq -r .id)"
     deployment=$(c8y inventory list --type c8y_Application_"$app_id" | jq -r '.c8y_Status.instances | keys .[0]')
     c8y api --url "/application/applications/$app_id/logs/$deployment?dateFrom=$__dateFrom"
